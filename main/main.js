@@ -28,6 +28,23 @@ const createWindow = async () => {
 		},
 	})
 
+	setPortListeners = (port) => {
+		if(port !== null) {
+			port.on('readable', () => {
+				if (port !== null) console.log('Data:', port.read().toString());
+			})
+			port.on('error', (err) => {
+				console.log('Error: ', err.message)
+			})
+			port.on('close', () => {
+				console.log("port closed");
+				win.webContents.send('portClosed');
+			})
+		} else {
+			console.err("Port is null");
+		}
+	}
+
 	getPorts = async (firstLoad) => {
 		return serialport.list().then((ports, err) => {
 			if (err) {
@@ -40,6 +57,7 @@ const createWindow = async () => {
 			} else if (firstLoad) {
 				selectedPort = ports[0];
 				port = new serialport(selectedPort.path, { baudRate: DEFAULT_BAUD_RATE, autoOpen: false });
+				setPortListeners(port);
 				selectedBaudRate = DEFAULT_BAUD_RATE;
 				port.open((err) => {
 					if (err) {
@@ -86,6 +104,7 @@ const createWindow = async () => {
 			});
 		} else {
 			port = new serialport(path, { baudRate: rate, autoOpen: false });
+			setPortListeners(port);
 			port.open((err) => {
 				if (err) {
 					event.reply('portOpened', [false, selectedPort, selectedBaudRate]);
@@ -165,15 +184,6 @@ const createWindow = async () => {
 			})
 		}
 	})
-
-	if(port !== null) {
-		port.on('readable', () => {
-			if (port !== null) console.log('Data:', port.read().toString());
-		})
-		port.on('error', (err) => {
-			console.log('Error: ', err.message)
-		})
-	}
 
 	win.loadFile(path.join(__dirname, "../resources/index.html"));
 	if(isDev) win.webContents.openDevTools();

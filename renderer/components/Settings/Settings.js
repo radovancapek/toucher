@@ -75,7 +75,8 @@ class Settings extends React.Component {
             codes: this.state.actCodes
         }
         let settings = JSON.stringify(settingsObj);
-        fs.writeFileSync(path, settings);
+        let fileSaved = fs.writeFileSync(path, settings);
+        console.log("file", fileSaved);
     }
 
     loadFile = async (path) => {

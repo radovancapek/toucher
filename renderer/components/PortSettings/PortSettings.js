@@ -41,6 +41,9 @@ class PortSettings extends React.Component {
         ipcRenderer.on('error', (event, arg) => {
             this.setState({ error: arg.message });
         })
+        ipcRenderer.on('portClosed', (event) => {
+            this.setState({ connected: false });
+        })
         ipcRenderer.on('ports', (event, ports) => {
             let portsArray = JSON.parse(ports);
             // portsArray.push({ path: "COM4" }, { path: "COM5" });
