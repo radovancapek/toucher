@@ -1,0 +1,25 @@
+.HexagonGrid {
+    position: relative;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    
+    .gridWrapper {
+        position: relative;
+        .cursor {
+            height: 3px;
+            width: 3px;
+            position: absolute;
+            background-color: red;
+            z-index: 1000;
+        }
+        .center {
+            position: absolute;
+            height: 3px;
+            width: 3px;
+            background-color: blue;
+            z-index: 10;
+        }
+    }
+}

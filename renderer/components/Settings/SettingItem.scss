@@ -1,0 +1,14 @@
+.SettingItem {
+    width: 100px;
+    height: 20px;
+    margin-top: 10px;
+    display: flex;
+
+    select {
+        width: 50px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        text-indent: 1px;
+        text-align-last: center;
+    }
+}

@@ -1,0 +1,7 @@
+.SettingGrid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 5px;
+    justify-content: center;
+}

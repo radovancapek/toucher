@@ -1,0 +1,36 @@
+.App {
+  padding: 30px;
+  .cursorPos {
+    margin: auto;
+    width: auto;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .header {
+    text-align: end;
+  }
+
+  .content {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    margin-top: 10px;
+
+    .HexagonGrid {
+      flex: 1;
+    }
+  }
+
+  .button {
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid grey;
+    height: 30px;
+    &:active {
+        background-color: whitesmoke;
+    }
+    outline: none;
+  }
+}
