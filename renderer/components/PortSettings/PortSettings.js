@@ -46,7 +46,7 @@ class PortSettings extends React.Component {
         })
         ipcRenderer.on('ports', (event, ports) => {
             let portsArray = JSON.parse(ports);
-            // portsArray.push({ path: "COM4" }, { path: "COM5" });
+            portsArray.push({ path: "COM4" }, { path: "COM5" });
             let options = [];
             portsArray.map(port => {
                 options.push({ value: port, label: port.path });
@@ -80,13 +80,9 @@ class PortSettings extends React.Component {
             this.setState({ selectedBaudRateOption: option, change: true });
     }
 
-    applyChanges = () => {
-        this.setState({ error: null, change: false });
-        ipcRenderer.send("portSettingsChanged", [this.state.selectedPortOption.value, this.state.selectedBaudRateOption.value]);
-    }
-
     reconnect = () => {
-        ipcRenderer.send('reconnect');
+        this.setState({ error: null, change: false });
+        ipcRenderer.send("reconnect", [this.state.selectedPortOption.value, this.state.selectedBaudRateOption.value]);
     }
 
     render() {
@@ -115,11 +111,7 @@ class PortSettings extends React.Component {
                     />
                 </div>
                 <div className="confirm">
-                    {this.state.change ? (
-                        <button className="button" disabled={buttonsDisabled} onClick={this.applyChanges}>Apply</button>
-                    ) : (
-                        <button className="button reconnect" disabled={buttonsDisabled} onClick={this.reconnect}>Reconnect</button>
-                    )}
+                    <button className="button reconnect" disabled={buttonsDisabled} onClick={this.reconnect}>{this.state.connected ? "Reconnect" : "Connect"}</button>
                     {this.state.connected ? (
                         <div>
                             <FaCheckCircle className="icon green" />

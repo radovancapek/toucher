@@ -24,7 +24,6 @@ class Settings extends React.Component {
     componentDidMount() {
         ipcRenderer.on("saveSettings", (event, arg) => {
             if ((arg != null) && !arg.canceled && arg.filePath) this.saveFile(arg.filePath);
-            else console.log("Error saving file");
         });
         ipcRenderer.on("loadSettings", (event, arg) => {
             if ((arg != null) && !arg.canceled && arg.filePaths) this.loadFile(arg.filePaths[0]);
@@ -75,8 +74,22 @@ class Settings extends React.Component {
             codes: this.state.actCodes
         }
         let settings = JSON.stringify(settingsObj);
-        let fileSaved = fs.writeFileSync(path, settings);
-        console.log("file", fileSaved);
+        // console.log("bytesSaved", fs.writeFileSync(path, settings));
+
+        fs.writeFile(path, settings, (err) => {
+            if(err) {
+                console.log(err);
+                ipcRenderer.send("errorDialog", err);
+            } else {
+                ipcRenderer.send("fileSavedDialog");
+            }
+        })
+
+        // let bytesSaved = fs.writeFileSync(path, settings);
+        // if(bytesSaved > 0) {
+        //     ipcRenderer.send("fileSavedDialog");
+        // }
+        // console.log("file", bytesSaved);
     }
 
     loadFile = async (path) => {

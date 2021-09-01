@@ -1,12 +1,13 @@
 .Settings {
     flex-direction: column;
     display: flex;
-    transition: all 1s ease;
-    -webkit-transition: all 1s ease;
-    -o-transition: all 1s ease;
-    -moz-transition: all 1s ease;
+    align-items: flex-end;
+    transition: all 500ms ease;
+    -webkit-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
     flex: 0;
-    overflow: auto;
+    overflow: hidden;
     opacity: 0;
 
     .SettingGrid {
@@ -32,14 +33,15 @@
         }
         .gridSettings {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
+            align-items: center;
             visibility: visible;
             max-height: 300px;
-            transition: max-height 1ms 500ms, visibility 1ms 500ms;
-            -webkit-transition: max-height 1ms 500ms, visibility 1ms 500ms;
-            -o-transition: max-height 1ms 500ms, visibility 1ms 500ms;
-            -moz-transition: max-height 1ms 500ms, visibility 1ms 500ms;
-            flex-wrap: wrap;
+            transition: max-height 1ms 250ms, visibility 1ms 250ms;
+            -webkit-transition: max-height 1ms 250ms, visibility 1ms 250ms;
+            -o-transition: max-height 1ms 250ms, visibility 1ms 250ms;
+            -moz-transition: max-height 1ms 250ms, visibility 1ms 250ms;
+            flex-wrap: wrap-reverse;
             padding-bottom: 5px;
             .inputs {
                 display: flex;

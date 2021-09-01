@@ -29,7 +29,7 @@ const createWindow = async () => {
 	})
 
 	setPortListeners = (port) => {
-		if(port !== null) {
+		if (port !== null) {
 			port.on('readable', () => {
 				if (port !== null) console.log('Data:', port.read().toString());
 			})
@@ -73,7 +73,7 @@ const createWindow = async () => {
 
 	await getPorts(true);
 
-	setInterval(() =>{ getPorts()},1000);
+	setInterval(() => { getPorts() }, 1000);
 
 	let menu = Menu.buildFromTemplate([
 		{
@@ -123,10 +123,29 @@ const createWindow = async () => {
 	})
 
 	ipcMain.on('openSaveDialog', (event, args) => {
-		dialog.showSaveDialog({ title: "Save settings" }).then((res) => {
+		dialog.showSaveDialog({
+			title: "Save settings",
+			filters: [
+				{ name: 'JSON', extensions: ['json'] }
+			]
+		}).then((res) => {
 			event.reply('saveSettings', res);
 		}).catch(err => {
 			console.err(err);
+		});
+	})
+
+	ipcMain.on('fileSavedDialog', () => {
+		dialog.showMessageBox({
+			title: "Toucher",
+			message: "Settings successfully saved!"
+		});
+	})
+
+	ipcMain.on('errorDialog', (event, arg) => {
+		dialog.showMessageBox({
+			title: "Error",
+			message: arg
 		});
 	})
 
@@ -134,21 +153,13 @@ const createWindow = async () => {
 		dialog.showOpenDialog({
 			title: "Load settings",
 			filters: [
-				{ name: 'Supported files', extensions: ['json'] }
+				{ name: 'JSON', extensions: ['json'] }
 			]
 		}).then((res) => {
 			event.reply('loadSettings', res);
 		}).catch(err => {
 			console.err(err);
 		});
-	})
-
-	ipcMain.on('portSettingsChanged', (event, args) => {
-		const portPath = args[0].path;
-		const newBaudRate = args[1];
-		selectedPort = args[0];
-		selectedBaudRate = newBaudRate;
-		openPort(portPath, newBaudRate, event);
 	})
 
 	ipcMain.on('isConnected', (event) => {
@@ -164,8 +175,12 @@ const createWindow = async () => {
 		}
 	})
 
-	ipcMain.on('reconnect', (event) => {
-		if (port !== null) openPort(selectedPort.path, selectedBaudRate, event);
+	ipcMain.on('reconnect', (event, args) => {
+		const portPath = args[0].path;
+		const newBaudRate = args[1];
+		selectedPort = args[0];
+		selectedBaudRate = newBaudRate;
+		openPort(portPath, newBaudRate, event);
 	})
 
 	ipcMain.on('close', (event) => {
@@ -188,7 +203,7 @@ const createWindow = async () => {
 	})
 
 	win.loadFile(path.join(__dirname, "../resources/index.html"));
-	if(isDev) win.webContents.openDevTools();
+	if (isDev) win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
