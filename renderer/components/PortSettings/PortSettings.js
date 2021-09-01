@@ -42,7 +42,7 @@ class PortSettings extends React.Component {
             this.setState({ error: arg.message });
         })
         ipcRenderer.on('portClosed', (event) => {
-            this.setState({ connected: false });
+            this.setState({ connected: false, selectedPortOption: null });
         })
         ipcRenderer.on('ports', (event, ports) => {
             let portsArray = JSON.parse(ports);
@@ -64,13 +64,6 @@ class PortSettings extends React.Component {
                 mounted: true
             });
         })
-    }
-
-    getPorts = () => {
-        this.setState({ loadingPorts: true });
-        setTimeout(() => {
-            ipcRenderer.send('ports');
-        }, 500);
     }
 
     handlePortChange = (option) => {
@@ -97,8 +90,8 @@ class PortSettings extends React.Component {
     }
 
     render() {
+        const buttonsDisabled = !this.state.selectedPortOption || !this.state.selectedBaudRateOption;
         const show = this.props.show ? " show" : "";
-        const spin = this.state.loadingPorts ? " spin" : "";
         return (
             <div className={"PortSettings" + show}>
                 <div className="selectWrapper ports">
@@ -112,9 +105,6 @@ class PortSettings extends React.Component {
                     ) : (
                         <div className="noPorts">No available ports</div>
                     )}
-                    <button disabled={this.state.loadingPorts} onClick={this.getPorts}>
-                        <FaSyncAlt className={"icon" + spin} />
-                    </button>
                 </div>
                 <div className="selectWrapper baudRate">
                     <div className="label">Baud rate:</div>
@@ -125,12 +115,10 @@ class PortSettings extends React.Component {
                     />
                 </div>
                 <div className="confirm">
-                    {this.state.selectedPortOption && (
-                        this.state.change ? (
-                            <button className="button" onClick={this.applyChanges}>Apply</button>
-                        ) : (
-                            <button className="button reconnect" onClick={this.reconnect}>Reconnect</button>
-                        )
+                    {this.state.change ? (
+                        <button className="button" disabled={buttonsDisabled} onClick={this.applyChanges}>Apply</button>
+                    ) : (
+                        <button className="button reconnect" disabled={buttonsDisabled} onClick={this.reconnect}>Reconnect</button>
                     )}
                     {this.state.connected ? (
                         <div>

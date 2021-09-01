@@ -53,7 +53,7 @@ const createWindow = async () => {
 			}
 			win.webContents.send('ports', JSON.stringify(ports));
 			if (ports.length === 0) {
-				console.error('No ports discovered');
+				// console.error('No ports discovered');
 			} else if (firstLoad) {
 				selectedPort = ports[0];
 				port = new serialport(selectedPort.path, { baudRate: DEFAULT_BAUD_RATE, autoOpen: false });
@@ -72,6 +72,8 @@ const createWindow = async () => {
 	}
 
 	await getPorts(true);
+
+	setInterval(() =>{ getPorts()},1000);
 
 	let menu = Menu.buildFromTemplate([
 		{

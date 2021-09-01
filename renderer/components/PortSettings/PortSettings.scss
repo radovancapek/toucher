@@ -35,25 +35,6 @@
                 width: 100px;
                 white-space: nowrap;
             }
-            button {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 38px;
-                width: 38px;
-                white-space: nowrap;
-                margin-left: 5px;
-                background-color: white;
-                border-radius: 3px;
-                border: 1px solid grey;
-                box-sizing: border-box;
-
-                .icon{
-                    &.spin {
-                        animation: spin infinite 1s linear;
-                    }
-                }
-            }
         }
         .confirm {
             display: flex;
