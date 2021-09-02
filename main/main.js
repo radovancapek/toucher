@@ -2,16 +2,23 @@ const { BrowserWindow, app, ipcMain, Menu, dialog } = require("electron");
 const path = require("path");
 const serialport = require('serialport');
 const isDev = require("electron-is-dev");
+const { autoUpdater } = require('electron-updater');
+const ProgressBar = require('electron-progressbar');
 const DEFAULT_BAUD_RATE = 115200;
 let selectedPort = null;
 let selectedBaudRate = "";
 let port = null;
 
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
 	app.quit();
 }
+
+autoUpdater.requestHeaders = { "PRIVATE-TOKEN": "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" };
+autoUpdater.autoDownload = false;
+
+let progressBar;
+
 
 const createWindow = async () => {
 	const win = new BrowserWindow({
@@ -19,6 +26,7 @@ const createWindow = async () => {
 		height: 800,
 		minHeight: 400,
 		minWidth: 800,
+		title: "Toucher v" + app.getVersion(),
 		webPreferences: {
 			nodeIntegration: true,
 			worldSafeExecuteJavaScript: true,
@@ -84,6 +92,12 @@ const createWindow = async () => {
 					accelerator: 'CmdOrCtrl+R',
 					click() {
 						win.reload();
+					}
+				},
+				{
+					label: 'Check for updates',
+					click() {
+						autoUpdater.checkForUpdates();
 					}
 				},
 				{ type: 'separator' },
@@ -202,12 +216,67 @@ const createWindow = async () => {
 		}
 	})
 
-	win.loadFile(path.join(__dirname, "../resources/index.html"));
+	win.loadFile(path.join(__dirname, "../resources/index.html")).then(() => {
+		console.log("window file loaded");
+		win.setTitle("Toucher v" + app.getVersion());
+	});
 	if (isDev) win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
-	createWindow()
+	createWindow();
+	autoUpdater.on('update-available', (info) => {
+		dialog.showMessageBox({
+			type: 'info',
+			title: 'Found Updates',
+			message: 'Current version: ' + app.getVersion() + '\nFound version ' + info.version + ', do you want update now?',
+			buttons: ['Update', 'Cancel']
+		}).then((res) => {
+			if (res.response === 0) {
+				progressBar = new ProgressBar({
+					indeterminate: false,
+					text: 'Downloading update...',
+					detail: 'Wait...'
+				});
+				progressBar.on('completed', function () {
+					console.info(`completed...`);
+				})
+					.on('aborted', function () {
+						console.info(`aborted...`);
+					});
+				autoUpdater.downloadUpdate();
+			}
+		})
+	})
+
+	autoUpdater.on('update-not-available', () => {
+		dialog.showMessageBox({
+			title: 'No Updates',
+			message: 'Current version is up-to-date.'
+		})
+	})
+
+	autoUpdater.on('error', (error) => {
+		dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+	})
+
+	autoUpdater.on('download-progress', function (progressObj) {
+		if (progressBar && !progressBar.isCompleted()) {
+			progressBar.value = progressObj.percent;
+		}
+	});
+
+	autoUpdater.on('update-downloaded', (info) => {
+		if (progressBar) {
+			progressBar.setCompleted();
+		}
+		dialog.showMessageBox({
+			title: 'Install Updates',
+			message: 'Updates downloaded, application will be quit for update...\n' + 'New version destination: ' + info.downloadedFile
+		}).then(() => {
+			setImmediate(() => autoUpdater.quitAndInstall());
+		})
+	})
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

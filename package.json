@@ -2,7 +2,7 @@
 	"name": "toucher",
 	"description": "App for controlling toucher",
 	"author": "radovancapek",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
 	"scripts": {
 		"dev": "npm run pack && npm run start",
@@ -12,7 +12,12 @@
 		"start": "electron .",
 		"electronmon": "electronmon .",
 		"build": "electron-builder",
-		"buildportable": "electron-builder build --win portable"
+		"buildportable": "electron-builder build --win portable",
+		"publish": "electron-builder --publish always"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/radovancapek/toucher.git"
 	},
 	"build": {
 		"productName": "Toucher",
@@ -21,7 +26,14 @@
 			"target": [
 				"nsis"
 			]
-		}
+		},
+		"publish": [
+			{
+				"provider": "github",
+				"owner": "radovancapek",
+				"repo": "toucher"
+			}
+		]
 	},
 	"electronmon": {
 		"patterns": [
@@ -32,7 +44,9 @@
 	"main": "./main/main.js",
 	"dependencies": {
 		"electron-is-dev": "^2.0.0",
+		"electron-progressbar": "^2.0.1",
 		"electron-squirrel-startup": "^1.0.0",
+		"electron-updater": "^4.3.9",
 		"react-icons": "^4.2.0",
 		"react-select": "^4.3.1",
 		"react-svg-path": "^1.13.1",
